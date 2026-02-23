@@ -36,15 +36,23 @@ export function BepiSidebar({ structure, selectedGrupo, selectedDetalhado, onSel
                 {idx + 1}. {group.grupo}
               </span>
 
-              {expandedGroups.has(group.grupo) ? (
-                <ChevronDown className="h-4 w-4 shrink-0" />
-              ) : (
-                <ChevronRight className="h-4 w-4 shrink-0" />
-              )}
+              <ChevronRight
+                className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+                  expandedGroups.has(group.grupo) ? "rotate-90" : "rotate-0"
+                }`}
+              />
             </button>
 
-            {expandedGroups.has(group.grupo) && (
-              <div className="ml-2">
+            <div
+              className={`
+                ml-2 overflow-hidden transition-all duration-200 ease-out
+                ${expandedGroups.has(group.grupo) ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}
+              `}
+            >
+              <div className={`
+                transition-transform duration-200 ease-out
+                ${expandedGroups.has(group.grupo) ? "translate-y-0" : "-translate-y-1"}
+              `}>
                 {group.detalhados.map((det, dIdx) => {
                   const isActive =
                     selectedGrupo === group.grupo &&
@@ -54,18 +62,26 @@ export function BepiSidebar({ structure, selectedGrupo, selectedDetalhado, onSel
                     <button
                       key={det.label}
                       onClick={() => onSelect(group.grupo, det.label)}
-                      className={`w-full text-left px-4 py-1.5 text-xs transition-colors ${
-                        isActive
+                      className={`
+                        relative w-full text-left px-4 py-2 text-xs transition-colors rounded-md
+                        ${isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                          : "hover:bg-sidebar-accent/50 text-sidebar-foreground/80"
-                      }`}
+                          : "hover:bg-sidebar-accent/50 text-sidebar-foreground/80"}
+                      `}
                     >
+                      {/* Barra lateral do item ativo */}
+                      <span
+                        className={`
+                          absolute left-0 top-1 bottom-1 w-1 rounded-r
+                          ${isActive ? "bg-primary" : "bg-transparent"}
+                        `}
+                      />
                       {idx + 1}.{dIdx + 1}. {det.label}
                     </button>
                   );
                 })}
               </div>
-            )}
+            </div>
           </div>
         ))}
       </nav>

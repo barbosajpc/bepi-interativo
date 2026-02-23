@@ -164,14 +164,22 @@ const Index = () => {
     <div className="flex flex-col h-screen bg-background">
       <BepiHeader onToggleSidebar={() => setSidebarOpen((v) => !v)} />
       <div className="flex flex-1 overflow-hidden">
-        {sidebarOpen && (
-          <BepiSidebar
-            structure={structure}
-            selectedGrupo={selectedGrupo}
-            selectedDetalhado={selectedDetalhado}
-            onSelect={handleSelect}
-          />
-        )}
+        <div
+      className={`
+        transition-[width] duration-300 ease-out
+        ${sidebarOpen ? "w-72 opacity-100" : "w-0 opacity-0"}
+        overflow-hidden
+        border-r border-sidebar-border
+        bg-sidebar
+      `}
+    >
+      <BepiSidebar
+        structure={structure}
+        selectedGrupo={selectedGrupo}
+        selectedDetalhado={selectedDetalhado}
+        onSelect={handleSelect}
+      />
+    </div>
 
         <main className="flex-1 overflow-y-auto p-6">
           {structureLoading ? (
@@ -180,7 +188,7 @@ const Index = () => {
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-0">
                 {/* ✅ REMOVIDO: esse texto pequeno repetia o título do gráfico */}
                 <div />
 

@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  base: "/bepi/",
+  base: "/bepi-interativo/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

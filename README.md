@@ -1,73 +1,76 @@
-# Welcome to your Lovable project
+# SEPLAN Bepi Interactive Dashboard
 
-## Project info
+Este projeto é um dashboard interativo para visualização e análise de dados do SEPLAN Bepi, utilizando Supabase como backend para armazenamento e gerenciamento de dados.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Tecnologias Utilizadas
 
-## How can I edit this code?
+- **Vite**: Ferramenta de build rápida para desenvolvimento frontend.
+- **TypeScript**: Superset do JavaScript com tipagem estática.
+- **React**: Biblioteca para construção de interfaces de usuário.
+- **shadcn-ui**: Componentes de UI reutilizáveis e acessíveis.
+- **Tailwind CSS**: Framework CSS utilitário para estilização.
+- **Supabase**: Plataforma de backend como serviço para banco de dados e autenticação.
 
-There are several ways of editing your application.
+## Instalação e Configuração
 
-**Use Lovable**
+### Pré-requisitos
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- Node.js & npm instalados. Recomendamos usar [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) para gerenciar versões do Node.js.
 
-Changes made via Lovable will be committed automatically to this repo.
+### Passos para Instalação
 
-**Use your preferred IDE**
+1. **Clone o repositório**:
+   ```sh
+   git clone <URL_DO_REPOSITORIO>
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **Navegue para o diretório do projeto**:
+   ```sh
+   cd seplan-bepi-interative-supabase
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. **Instale as dependências**:
+   ```sh
+   npm install
+   ```
 
-Follow these steps:
+4. **Configure o Supabase**:
+   - Crie um projeto no [Supabase](https://supabase.com).
+   - Copie as chaves de API (anon key e service role key) para o arquivo `src/integrations/supabase/client.ts`.
+   - Execute as migrações do banco de dados localizadas em `supabase/migrations/`.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+5. **Inicie o servidor de desenvolvimento**:
+   ```sh
+   npm run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+O aplicativo estará disponível em `http://localhost:5173` (porta padrão do Vite).
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Estrutura do Projeto
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- `src/components/`: Componentes React reutilizáveis, incluindo gráficos, filtros e UI.
+- `src/pages/`: Páginas principais da aplicação.
+- `src/integrations/supabase/`: Configuração e tipos do Supabase.
+- `src/lib/`: Utilitários e APIs para dados do Bepi.
+- `supabase/`: Configurações, funções e migrações do Supabase.
 
-**Edit a file directly in GitHub**
+## Scripts Disponíveis
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `npm run dev`: Inicia o servidor de desenvolvimento.
+- `npm run build`: Constrói a aplicação para produção.
+- `npm run preview`: Visualiza a build de produção localmente.
+- `npm run test`: Executa os testes.
 
-**Use GitHub Codespaces**
+## Contribuição
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Para contribuir com o projeto:
 
-## What technologies are used for this project?
+1. Faça um fork do repositório.
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`).
+3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`).
+4. Push para a branch (`git push origin feature/nova-feature`).
+5. Abra um Pull Request.
 
-This project is built with:
+## Licença
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.

@@ -46,7 +46,7 @@ export function BepiSidebar({ structure, selectedGrupo, selectedDetalhado, onSel
             <div
               className={`
                 ml-2 overflow-hidden transition-all duration-200 ease-out
-                ${expandedGroups.has(group.grupo) ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}
+                ${expandedGroups.has(group.grupo) ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}
               `}
             >
               <div className={`

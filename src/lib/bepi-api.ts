@@ -1,4 +1,9 @@
-import { supabase } from "@/integrations/supabase/client";
+// ⚠️  Adicione no .env do frontend:
+//     VITE_API_URL=http://localhost:3000
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+
+// ========== TYPES ==========
 
 export interface BepiStructure {
   Grupo: string;
@@ -9,41 +14,47 @@ export interface BepiStructure {
 
 export interface BepiDataPoint {
   Ano: number;
-  "Agregação": string;
+  Agregação: string;
   "Origem da Energia": string;
   "Tipo de fonte": string;
   "Valor da Energia": number;
 }
 
-type OkResponse<T> = { ok: true; data: T };
-type ErrResponse = { ok: false; error: string };
-
-function unwrap<T>(payload: any): T {
-  // suporta tanto retorno novo {ok,data} quanto antigo (direto)
-  if (payload?.ok === false) throw new Error(payload.error || "Erro na function");
-  if (payload?.ok === true) return payload.data as T;
-  return payload as T;
+export interface GroupedStructure {
+  grupo: string;
+  indiceGrupo: number;
+  detalhados: { label: string; indiceDetalhado: number }[];
 }
 
-export async function fetchStructure(): Promise<BepiStructure[]> {
-  const { data, error } = await supabase.functions.invoke("bepi-data", {
-    body: { action: "get_structure" },
+// ========== HTTP HELPER ==========
+
+async function postBepi<T>(body: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${API_URL}/bepi-data`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
   });
 
-  if (error) throw error;
-  return unwrap<BepiStructure[]>(data);
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.error ?? `Erro ${res.status}`);
+  }
+
+  return json as T;
+}
+
+// ========== API CALLS ==========
+
+export async function fetchStructure(): Promise<BepiStructure[]> {
+  return postBepi<BepiStructure[]>({ action: "get_structure" });
 }
 
 export async function fetchYearRange(
   grupo: string,
   detalhado: string
 ): Promise<{ minAno: number | null; maxAno: number | null }> {
-  const { data, error } = await supabase.functions.invoke("bepi-data", {
-    body: { action: "get_year_range", grupo, detalhado },
-  });
-
-  if (error) throw error;
-  return unwrap<{ minAno: number | null; maxAno: number | null }>(data);
+  return postBepi({ action: "get_year_range", grupo, detalhado });
 }
 
 export async function fetchChartData(
@@ -52,53 +63,35 @@ export async function fetchChartData(
   anoMin: number,
   anoMax: number
 ): Promise<BepiDataPoint[]> {
-  const { data, error } = await supabase.functions.invoke("bepi-data", {
-    body: { action: "get_data", grupo, detalhado, anoMin, anoMax },
-  });
-
-  if (error) throw error;
-  return unwrap<BepiDataPoint[]>(data);
+  return postBepi<BepiDataPoint[]>({ action: "get_data", grupo, detalhado, anoMin, anoMax });
 }
 
-export interface GroupedStructure {
-  grupo: string;
-  indiceGrupo: number; // <- vem do banco
-  detalhados: { label: string; indiceDetalhado: number }[];
-}
+// ========== UTILS ==========
 
 export function groupStructure(data: BepiStructure[]): GroupedStructure[] {
-  const map = new Map<
-    string,
-    { indiceGrupo: number; detalhados: Map<string, number> }
-  >();
+  const map = new Map<string, { indiceGrupo: number; detalhados: Map<string, number> }>();
 
   for (const item of data) {
     const grupo = item.Grupo;
     const det = item.Detalhado;
-
-    const ig = Number(item["Índice - Grupo"] ?? item["indice_grupo"] ?? 0);
-    const id = Number(item["Índice - Detalhado"] ?? item["indice_detalhado"] ?? 0);
+    const ig = Number(item["Índice - Grupo"] ?? 0);
+    const id = Number(item["Índice - Detalhado"] ?? 0);
 
     if (!map.has(grupo)) map.set(grupo, { indiceGrupo: ig, detalhados: new Map() });
 
     const bucket = map.get(grupo)!;
-
-    // mantém menor índice se houver duplicatas
     const prev = bucket.detalhados.get(det);
     if (prev == null || id < prev) bucket.detalhados.set(det, id);
-
     if (ig < bucket.indiceGrupo) bucket.indiceGrupo = ig;
   }
 
-  const grouped = Array.from(map.entries()).map(([grupo, obj]) => ({
-    grupo,
-    indiceGrupo: obj.indiceGrupo,
-    detalhados: Array.from(obj.detalhados.entries())
-      .map(([label, indiceDetalhado]) => ({ label, indiceDetalhado }))
-      .sort((a, b) => a.indiceDetalhado - b.indiceDetalhado),
-  }));
-
-  grouped.sort((a, b) => a.indiceGrupo - b.indiceGrupo);
-
-  return grouped;
+  return Array.from(map.entries())
+    .map(([grupo, obj]) => ({
+      grupo,
+      indiceGrupo: obj.indiceGrupo,
+      detalhados: Array.from(obj.detalhados.entries())
+        .map(([label, indiceDetalhado]) => ({ label, indiceDetalhado }))
+        .sort((a, b) => a.indiceDetalhado - b.indiceDetalhado),
+    }))
+    .sort((a, b) => a.indiceGrupo - b.indiceGrupo);
 }
